@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: ai-lab-guide
+metadata:
+    template: azd-init@1.23.2
+services:
+    frontend:
+        project: frontend
+        host: containerapp
+        language: js
+        dist: dist
+resources:
+    frontend:
+        type: host.containerapp
+        port: 80
