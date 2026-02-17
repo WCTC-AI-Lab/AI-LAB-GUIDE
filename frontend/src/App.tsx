@@ -1,35 +1,52 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
+import LLMExplore from './LLMExplore';
 
+function Home() {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Box sx={{ py: 4 }}>
+      <Typography variant="h3" color="primary" gutterBottom>
+        Welcome to the AI Lab Frontend
+      </Typography>
+      <Typography variant="body1" color="text.secondary">
+        This is a minimal React + Flask monorepo starter. Use the navigation bar to explore features.
+      </Typography>
+    </Box>
+  );
 }
 
-export default App
+
+
+function App() {
+  return (
+    <Box sx={{ minHeight: '100vh', bgcolor: '#e3eafc' }}>
+      <Router>
+        <AppBar position="static" sx={{ bgcolor: '#1a237e', width: '100vw', left: 0 }}>
+          <Toolbar>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              AI Lab
+            </Typography>
+            <Button color="inherit" component={Link} to="/">Home</Button>
+            <Button color="inherit" component={Link} to="/llm-explore">LLM Explore</Button>
+          </Toolbar>
+        </AppBar>
+        <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+          <Container maxWidth="md" sx={{ bgcolor: '#fff', minHeight: '80vh', mt: 4, mb: 4, borderRadius: 2, boxShadow: 2, px: { xs: 1, sm: 3 } }}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/llm-explore" element={<LLMExplore />} />
+            </Routes>
+          </Container>
+        </Box>
+      </Router>
+    </Box>
+  );
+}
+
+export default App;

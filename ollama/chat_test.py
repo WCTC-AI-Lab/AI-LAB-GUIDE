@@ -48,7 +48,7 @@ def main():
         start_time = time.time()
         
         # We pass the ENTIRE 'messages' list every time.
-        stream = ollama.chat(
+        stream  = ollama.chat(
             model=MODEL, 
             messages=messages, 
             stream=True, 
