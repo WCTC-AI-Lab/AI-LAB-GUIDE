@@ -1,5 +1,6 @@
 from flask import Flask, send_from_directory, request, jsonify
 import os
+import math
 import ollama
 
 app = Flask(__name__, static_folder='frontend/dist', static_url_path='')
@@ -24,8 +25,8 @@ def predict_next_token():
     model_name = data.get('model')
     prompt = data.get('prompt')
     
-    # Defaulting to 0.0 for raw autocomplete consistency
-    temperature = data.get('temperature', 0.0) 
+    # Cast to float to ensure Ollama accepts it correctly
+    temperature = float(data.get('temperature', 0.0))
 
     if not model_name or prompt is None:
         return jsonify({"error": "Missing 'model' or 'prompt' in request."}), 400
@@ -35,21 +36,42 @@ def predict_next_token():
         response = ollama.generate(
             model=model_name,
             prompt=prompt,
-            raw=True,       # CRITICAL: Bypasses chat formatting
-            stream=False,   # No streaming needed for a single token
+            raw=True,       
+            stream=False,   
             options={
-                "num_predict": 1,    # Force 1 token stop
+                "num_predict": 1,    
                 "temperature": temperature,
-                "num_gpu": 99        # Maximize Ada 4000 VRAM
-            }
+                "num_gpu": 99        
+            },
+            # These flags tell Ollama to expose the inner probability distribution
+            logprobs=True,
+            top_logprobs=5
         )
         
         next_token = response.get('response', '')
         
+        # Parse the raw logprobs into human-readable percentages
+        parsed_logprobs = []
+        raw_logprobs = response.get('logprobs')
+        
+        # Ensure logprobs exist (requires a recent version of Ollama)
+        if raw_logprobs and len(raw_logprobs) > 0:
+            token_data = raw_logprobs[0] # Grab the data for the 1 token we generated
+            top_candidates = token_data.get('top_logprobs', [])
+            
+            for candidate in top_candidates:
+                # Convert the logprob into a percentage string
+                prob_percent = math.exp(candidate.get('logprob', -100)) * 100
+                parsed_logprobs.append({
+                    "token": candidate.get('token', ''),
+                    "prob_percent": round(prob_percent, 2)
+                })
+        
         return jsonify({
             "next_token": next_token,
             "prompt": prompt,
-            "model": model_name
+            "model": model_name,
+            "logprobs": parsed_logprobs
         })
 
     except Exception as e:
