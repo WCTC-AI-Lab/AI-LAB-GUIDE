@@ -164,7 +164,7 @@ export default function LLMExplore() {
             min={0.0}
             max={2.0}
             step={0.1}
-            onChange={(e, val) => setTemperature(val as number)}
+            onChange={(_e, val) => setTemperature(val as number)}
             disabled={isPlaying}
             valueLabelDisplay="auto"
           />

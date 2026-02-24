@@ -3,12 +3,27 @@ import os
 import math
 import ollama
 
-app = Flask(__name__, static_folder='frontend/dist', static_url_path='')
+# Serve frontend build from frontend/dist (path relative to this file so CWD doesn't matter)
+_ROOT = os.path.abspath(os.path.dirname(__file__))
+_FRONTEND_DIST = os.path.join(_ROOT, 'frontend', 'dist')
+
+app = Flask(__name__, static_folder=_FRONTEND_DIST, static_url_path='')
 
 AVAILABLE_MODELS = ["gpt-oss:20b", "gemma3:27b"]
 
 @app.route('/')
 def serve_index():
+    index_path = os.path.join(app.static_folder, 'index.html')
+    if not os.path.isfile(index_path):
+        return (
+            '<!DOCTYPE html><html><head><meta charset="utf-8"><title>AI Lab Guide</title></head><body>'
+            '<h1>Frontend not built</h1><p>From the project root, build the frontend first:</p>'
+            '<pre>cd frontend\nnpm install\nnpm run build</pre>'
+            '<p>Then restart the Flask app. Ensure Node.js is installed so <code>npm</code> is available.</p>'
+            '</body></html>',
+            200,
+            {'Content-Type': 'text/html; charset=utf-8'},
+        )
     return send_from_directory(app.static_folder, 'index.html')
 
 @app.route('/<path:path>')
