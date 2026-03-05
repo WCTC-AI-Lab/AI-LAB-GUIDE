@@ -7,6 +7,7 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import LLMExplore from './LLMExplore';
+import Games from './Games';
 
 function Home() {
   return (
@@ -34,6 +35,7 @@ function App() {
             </Typography>
             <Button color="inherit" component={Link} to="/">Home</Button>
             <Button color="inherit" component={Link} to="/llm-explore">LLM Explore</Button>
+            <Button color="inherit" component={Link} to="/games">Games</Button>
           </Toolbar>
         </AppBar>
         <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
@@ -41,6 +43,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/llm-explore" element={<LLMExplore />} />
+              <Route path="/games" element={<Games />} />
             </Routes>
           </Container>
         </Box>

@@ -81,6 +81,3 @@ Since the server runs invisibly in the background, use the PM2 CLI for managemen
 - **Restart**: Use after code changes or updates to environment variables.
 - **Stop**: Temporarily halt the background service.
 - **Delete**: Completely remove the app from PM2’s management.
-
-
-https://zealous-coast-060765e0f.2.azurestaticapps.net
