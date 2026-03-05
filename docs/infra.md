@@ -51,7 +51,7 @@ pm2-startup install
 2. Start the server with PM2:
 
 ```sh
-pm2 start venv\Scripts\pythonw.exe --name "FlaskBackend" -- run_server.py
+pm2 start venv\Scripts\pythonw.exe --name "AILabGuide" -- run_server.py
 ```
 
 > _Note: If your virtual environment is named differently, adjust the path to `pythonw.exe` accordingly._
@@ -81,3 +81,6 @@ Since the server runs invisibly in the background, use the PM2 CLI for managemen
 - **Restart**: Use after code changes or updates to environment variables.
 - **Stop**: Temporarily halt the background service.
 - **Delete**: Completely remove the app from PM2’s management.
+
+
+https://zealous-coast-060765e0f.2.azurestaticapps.net
