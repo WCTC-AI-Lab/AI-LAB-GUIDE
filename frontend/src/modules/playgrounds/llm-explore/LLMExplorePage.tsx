@@ -11,22 +11,18 @@ import Paper from '@mui/material/Paper';
 import Chip from '@mui/material/Chip';
 import Slider from '@mui/material/Slider';
 
-// Define the shape of our new logprob data
 interface LogprobCandidate {
   token: string;
   prob_percent: number;
 }
 
-export default function LLMExplore() {
+export default function LLMExplorePage() {
   const [models, setModels] = useState<string[]>([]);
   const [selectedModel, setSelectedModel] = useState('');
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
   const [lastToken, setLastToken] = useState<string | null>(null);
-  
-  // New state to hold the probability distribution
   const [latestLogprobs, setLatestLogprobs] = useState<LogprobCandidate[] | null>(null);
-  
   const [isPlaying, setIsPlaying] = useState(false);
   const [temperature, setTemperature] = useState<number>(0.0);
 
@@ -54,26 +50,25 @@ export default function LLMExplore() {
 
   const handleGenerateToken = async () => {
     if (!modelRef.current || !textRef.current) return;
-    
+
     setLoading(true);
     let success = false;
-    
+
     try {
       const res = await fetch('/api/predict-next-token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          model: modelRef.current, 
+        body: JSON.stringify({
+          model: modelRef.current,
           prompt: textRef.current,
           temperature: tempRef.current
         })
       });
       const data = await res.json();
-      
+
       if (data.next_token !== undefined) {
         setInputText(prev => prev + data.next_token);
         setLastToken(data.next_token);
-        // Save the parsed distribution for rendering
         setLatestLogprobs(data.logprobs || null);
         success = true;
       }
@@ -82,7 +77,7 @@ export default function LLMExplore() {
       setIsPlaying(false);
       isPlayingRef.current = false;
     }
-    
+
     setLoading(false);
     return success;
   };
@@ -92,7 +87,7 @@ export default function LLMExplore() {
     await handleGenerateToken();
     setTimeout(() => {
       if (isPlayingRef.current) generateLoop();
-    }, 50); 
+    }, 50);
   };
 
   const togglePlay = () => {
@@ -122,11 +117,11 @@ export default function LLMExplore() {
             <Typography variant="body2" color="text.secondary">
               Last Token:
             </Typography>
-            <Chip 
-              label={`"${lastToken}"`} 
-              color="primary" 
-              variant="outlined" 
-              size="small" 
+            <Chip
+              label={`"${lastToken}"`}
+              color="primary"
+              variant="outlined"
+              size="small"
               sx={{ fontFamily: 'monospace' }}
             />
           </Box>
@@ -136,7 +131,7 @@ export default function LLMExplore() {
         <Typography variant="h6" color="text.secondary" gutterBottom>
           Controls
         </Typography>
-        
+
         <FormControl fullWidth>
           <InputLabel>Model</InputLabel>
           <Select
@@ -171,19 +166,19 @@ export default function LLMExplore() {
         </Box>
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-          <Button 
-            variant="outlined" 
-            color="primary" 
-            onClick={handleGenerateToken} 
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={handleGenerateToken}
             disabled={loading || !inputText || isPlaying}
             sx={{ py: 1 }}
           >
             Step (1 Token)
           </Button>
-          <Button 
-            variant="contained" 
-            color={isPlaying ? "secondary" : "success"} 
-            onClick={togglePlay} 
+          <Button
+            variant="contained"
+            color={isPlaying ? "secondary" : "success"}
+            onClick={togglePlay}
             disabled={(!inputText && !isPlaying) || (loading && !isPlaying)}
             sx={{ py: 1.5, fontWeight: 'bold' }}
           >
@@ -191,7 +186,6 @@ export default function LLMExplore() {
           </Button>
         </Box>
 
-        {/* PROBABILITY DISTRIBUTION UI */}
         {latestLogprobs && latestLogprobs.length > 0 && (
           <Box sx={{ mt: 1, p: 2, bgcolor: '#ffffff', borderRadius: 2, boxShadow: 1 }}>
             <Typography variant="subtitle2" color="primary" fontWeight="bold" gutterBottom>
