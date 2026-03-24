@@ -51,7 +51,7 @@ pm2-startup install
 2. Start the server with PM2:
 
 ```sh
-pm2 start venv\Scripts\pythonw.exe --name "AILabGuide" -- run_server.py
+pm2 start venv\Scripts\pythonw.exe --name "AILabGuide" -- run_waitress.py
 ```
 
 > _Note: If your virtual environment is named differently, adjust the path to `pythonw.exe` accordingly._
