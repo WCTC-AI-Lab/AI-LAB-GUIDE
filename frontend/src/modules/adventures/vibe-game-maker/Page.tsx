@@ -1,62 +1,218 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
-import Divider from '@mui/material/Divider';
-import Stack from '@mui/material/Stack';
-import { GAMES_SITE_URL, GAMES_SOURCE_REPO_URL } from './links';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
+import { GAMES_SITE_URL, GAMES_SITE_TITLE, GAMES_SOURCE_REPO_URL } from './links';
+
+const DESKTOP_SHORTCUT_IMAGE = '/images/ai-lab-games-desktop-shortcut.png';
+
+function Cmd({ children, label }: { children: string; label: string }) {
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1.25 }}>
+      <Box
+        component="span"
+        sx={{
+          fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+          fontWeight: 700,
+          fontSize: '0.95rem',
+          bgcolor: 'primary.main',
+          color: 'primary.contrastText',
+          px: 1.25,
+          py: 0.5,
+          borderRadius: 1,
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {children}
+      </Box>
+      <Typography variant="body2" color="text.secondary">
+        {label}
+      </Typography>
+    </Box>
+  );
+}
+
+function StepCard({
+  step,
+  title,
+  children,
+}: {
+  step: number;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <Paper
+      elevation={3}
+      sx={{
+        p: { xs: 2.5, sm: 3.5 },
+        height: '100%',
+        borderRadius: 3,
+        bgcolor: '#fff',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      <Box
+        sx={{
+          width: 48,
+          height: 48,
+          borderRadius: '50%',
+          bgcolor: 'primary.main',
+          color: 'primary.contrastText',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontWeight: 800,
+          fontSize: '1.35rem',
+          mb: 2,
+        }}
+      >
+        {step}
+      </Box>
+      <Typography variant="h6" sx={{ fontWeight: 700, color: 'text.primary', mb: 1.5 }}>
+        {title}
+      </Typography>
+      <Box sx={{ flex: 1 }}>{children}</Box>
+    </Paper>
+  );
+}
 
 export default function VibeGameMakerAdventurePage() {
   return (
     <Box sx={{ py: 4 }}>
-      <Typography variant="h4" color="primary" gutterBottom>
-        Vibe-coded game maker
-      </Typography>
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 3, maxWidth: 640 }}>
-        You&apos;ll use the lab machine and an editor to build a small browser game. Each new game lives
-        as its own file in the <strong>games project</strong> (separate repository from this guide). When
-        you&apos;re ready, the games site picks them up so anyone can play.
-      </Typography>
+      {/* ── Hero: title + arcade ── */}
+      <Grid container spacing={3} alignItems="center" sx={{ mb: 5 }}>
+        <Grid size={{ xs: 12, md: 4 }}>
+          <Typography variant="h4" color="primary" sx={{ fontWeight: 800 }}>
+            Make a Video Game
+          </Typography>
+          <Typography variant="body1" color="text.primary" sx={{ mt: 1, lineHeight: 1.7 }}>
+            Build, iterate, and deploy your own game to the AI Lab Arcade.
+          </Typography>
+          <Typography variant="body2" sx={{ mt: 2 }}>
+            <Link href={GAMES_SITE_URL} target="_blank" rel="noopener noreferrer">
+              Visit the Arcade →
+            </Link>
+          </Typography>
+        </Grid>
+        <Grid size={{ xs: 12, md: 8 }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1, color: 'text.primary' }}>
+            Check out the Arcade
+          </Typography>
+          <Box
+            sx={{
+              width: '100%',
+              borderRadius: 2,
+              overflow: 'hidden',
+              border: 1,
+              borderColor: 'divider',
+              bgcolor: 'grey.900',
+            }}
+          >
+            <Box sx={{ position: 'relative', width: '100%', pt: '56.25%' }}>
+              <Box
+                component="iframe"
+                src={GAMES_SITE_URL}
+                title={`${GAMES_SITE_TITLE} — embedded preview`}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  border: 0,
+                }}
+              />
+            </Box>
+          </Box>
+        </Grid>
+      </Grid>
 
-      <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
-        On the lab machine
-      </Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 1, maxWidth: 640 }}>
-        Exact commands depend on how the games repo is set up—follow its README first. Typical flow:
-      </Typography>
-      <Stack component="ol" spacing={1} sx={{ pl: 3, maxWidth: 640, m: 0 }}>
-        <Typography component="li" variant="body2" color="text.secondary">
-          Open a terminal on this machine and clone or open the games repository.
+      {/* ── Steps section on a contrasting band ── */}
+      <Box
+        sx={{
+          mx: { xs: -1, sm: -3 },
+          px: { xs: 1, sm: 3 },
+          py: 5,
+          bgcolor: '#eef2f9',
+          borderRadius: 3,
+        }}
+      >
+        <Typography variant="h5" sx={{ fontWeight: 700, mb: 3, color: 'text.primary' }}>
+          How it works
         </Typography>
-        <Typography component="li" variant="body2" color="text.secondary">
-          Install dependencies and start the project dev server (see games repo README).
-        </Typography>
-        <Typography component="li" variant="body2" color="text.secondary">
-          Add a new game as a new file where that project expects it, then refresh locally to try it.
-        </Typography>
-        <Typography component="li" variant="body2" color="text.secondary">
-          Commit and push when you&apos;re happy; deployment is handled from the games repo.
-        </Typography>
-      </Stack>
 
-      <Divider sx={{ my: 3 }} />
+        <Grid container spacing={3}>
+          <Grid size={{ xs: 12, md: 4 }}>
+            <StepCard step={1} title="Open the Project">
+              <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.7 }}>
+                Click the <strong>GAME ADVENTURE</strong> shortcut on the desktop. It opens the project in Cursor
+                with the chat sidebar ready to go.
+              </Typography>
+              <Box sx={{ mt: 2, textAlign: 'center' }}>
+                <Box
+                  component="img"
+                  src={DESKTOP_SHORTCUT_IMAGE}
+                  alt="GAME ADVENTURE desktop shortcut"
+                  sx={{
+                    maxWidth: 160,
+                    width: '100%',
+                    height: 'auto',
+                    borderRadius: 1.5,
+                    border: 1,
+                    borderColor: 'grey.200',
+                  }}
+                />
+              </Box>
+            </StepCard>
+          </Grid>
 
-      <Typography variant="h6" gutterBottom>
-        Play games
-      </Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-        Hosted site (different repo / deployment from this guide):
-      </Typography>
-      <Typography variant="body1">
-        <Link href={GAMES_SITE_URL} target="_blank" rel="noopener noreferrer">
-          Open games site →
-        </Link>
-      </Typography>
+          <Grid size={{ xs: 12, md: 4 }}>
+            <StepCard step={2} title="Send a Start Command">
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                <Cmd label="start a new game">/new-game</Cmd>
+                <Cmd label="change one you started">/update-game</Cmd>
+                <Cmd label="remix an existing game">/fork-game</Cmd>
+              </Box>
+              <Typography variant="caption" color="text.disabled" sx={{ display: 'block', mt: 2.5 }}>
+                Type the command exactly and press Enter.
+              </Typography>
+            </StepCard>
+          </Grid>
+
+          <Grid size={{ xs: 12, md: 4 }}>
+            <StepCard step={3} title="Deploy Your Game">
+              <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.7 }}>
+                When you are happy with your game, type{' '}
+                <Box
+                  component="span"
+                  sx={{
+                    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+                    fontWeight: 700,
+                    fontSize: '0.95rem',
+                    bgcolor: 'primary.main',
+                    color: 'primary.contrastText',
+                    px: 1.25,
+                    py: 0.5,
+                    borderRadius: 1,
+                  }}
+                >
+                  /finish
+                </Box>{' '}
+                and press Enter. Wait a few minutes, then open the <strong>Dev App</strong> shortcut on the desktop
+                to see it live.
+              </Typography>
+            </StepCard>
+          </Grid>
+        </Grid>
+      </Box>
 
       {GAMES_SOURCE_REPO_URL ? (
-        <Box sx={{ mt: 3 }}>
-          <Typography variant="h6" gutterBottom>
-            Source repository
-          </Typography>
+        <Box sx={{ mt: 4 }}>
           <Typography variant="body1">
             <Link href={GAMES_SOURCE_REPO_URL} target="_blank" rel="noopener noreferrer">
               Games project on GitHub →

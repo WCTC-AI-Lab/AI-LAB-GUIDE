@@ -20,6 +20,8 @@ export default function PlaygroundsIndexPage() {
               title={meta.title}
               description={meta.description}
               to={`/playgrounds/${meta.slug}`}
+              thumbnailUrl={meta.thumbnailUrl}
+              thumbnailAlt={meta.thumbnailAlt}
             />
           </Grid>
         ))}

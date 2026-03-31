@@ -18,8 +18,8 @@ Web user guide for the **WCTC AI Lab** (Waukesha, WI): helps new users explore *
 
 ## Product areas (current)
 
-- **Playgrounds**: Hub `/playgrounds`. **LLM Explore** (`/playgrounds/llm-explore`) — step/auto next token, temperature, logprobs; needs local Ollama + models matching `AVAILABLE_MODELS` in `app.py`. **Computer vision** — placeholder only (SAM3/vision not wired yet).
-- **Adventures**: Hub `/adventures`. **Vibe-coded game maker** — instructions + link to hosted games site (`frontend/src/modules/adventures/vibe-game-maker/links.ts`); games live in a **separate repo**. **Azure static-site adventure** — intended direction, not in registry yet.
+- **Playgrounds**: Hub `/playgrounds`. **Explore a Large Language Model** (`/playgrounds/llm-explore`) — step/auto next token, temperature, logprobs; needs local Ollama + models matching `AVAILABLE_MODELS` in `app.py`. **Computer vision** — placeholder only (SAM3/vision not wired yet).
+- **Adventures**: Hub `/adventures`. **Make a Video Game** — instructions + link to hosted games site (`frontend/src/modules/adventures/vibe-game-maker/links.ts`); games live in a **separate repo**. **Azure static-site adventure** — intended direction, not in registry yet.
 - **Legacy routes**: `/llm-explore`, `/games` still exist for compatibility.
 
 ## Quick run (dev)

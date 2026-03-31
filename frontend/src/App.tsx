@@ -10,6 +10,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import PlaygroundsIndexPage from './modules/playgrounds/PlaygroundsIndexPage';
 import AdventuresIndexPage from './modules/adventures/AdventuresIndexPage';
 import NavHoverGroup from './NavHoverGroup';
+import HomePage from './HomePage';
 import {
   playgroundModules,
   adventureModules,
@@ -21,21 +22,6 @@ import {
 } from './modules/registry';
 
 const SUSPENSE_FALLBACK_MIN_HEIGHT_PX = 240;
-
-function Home() {
-  return (
-    <Box sx={{ py: 4 }}>
-      <Typography variant="h3" color="primary" gutterBottom>
-        Welcome to the AI Lab Guide
-      </Typography>
-      <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 560 }}>
-        This site is your entry point to the lab: quick playgrounds to try the machine, and short
-        adventures you can finish in about half an hour. Use the bar above to open a hub or jump
-        straight into a module.
-      </Typography>
-    </Box>
-  );
-}
 
 function PageSuspense({ children }: { children: ReactNode }) {
   return (
@@ -107,9 +93,9 @@ function App() {
           </Toolbar>
         </AppBar>
         <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-          <Container maxWidth="md" sx={{ bgcolor: '#fff', minHeight: '80vh', mt: 4, mb: 4, borderRadius: 2, boxShadow: 2, px: { xs: 1, sm: 3 } }}>
+          <Container maxWidth="lg" sx={{ bgcolor: '#fff', minHeight: '80vh', mt: 4, mb: 4, borderRadius: 2, boxShadow: 2, px: { xs: 1, sm: 3 } }}>
             <Routes>
-              <Route path="/" element={<Home />} />
+              <Route path="/" element={<HomePage />} />
               <Route path="/playgrounds" element={<PlaygroundsIndexPage />} />
               <Route path="/adventures" element={<AdventuresIndexPage />} />
               <Route

@@ -20,6 +20,8 @@ export default function AdventuresIndexPage() {
               title={meta.title}
               description={meta.description}
               to={`/adventures/${meta.slug}`}
+              thumbnailUrl={meta.thumbnailUrl}
+              thumbnailAlt={meta.thumbnailAlt}
             />
           </Grid>
         ))}

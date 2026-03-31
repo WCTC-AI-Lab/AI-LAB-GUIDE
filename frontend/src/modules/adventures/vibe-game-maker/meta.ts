@@ -3,8 +3,10 @@ import type { ModuleMeta } from '../../types';
 export const vibeGameMakerMeta: ModuleMeta = {
   navGroup: 'adventures',
   slug: 'vibe-game-maker',
-  title: 'Vibe-coded game maker',
+  title: 'Make a Video Game',
   description:
-    'Spend ~30 minutes vibe-coding a tiny game on the lab machine, then see it on the games site.',
+    'Build a small browser game with simple rules, publish it to the live arcade, and share the link if you want.',
   order: 0,
+  thumbnailUrl: '/images/make-a-video-game-thumbnail.png',
+  thumbnailAlt: 'AI Lab Arcade in the browser with a sample game',
 };
