@@ -8,9 +8,11 @@ This document describes how the **AI Lab Guide** React app organizes **playgroun
 
 Relevant paths (under the repo root):
 
-- **`frontend/src/App.tsx`** — Shell: `AppBar`, router, `Home`, and route definitions. Playground and adventure **detail** routes are generated from the registry via a small helper (`moduleDetailRoutes`). Optional legacy routes (e.g. `/llm-explore`, `/games`) can be defined here explicitly.
+- **`frontend/src/App.tsx`** — Shell: `AppBar`, router, and route definitions. Playground and adventure **detail** routes are generated from the registry via a small helper (`moduleDetailRoutes`). Optional legacy routes (e.g. `/llm-explore`, `/games`) can be defined here explicitly.
+- **`frontend/src/labHardwareSpec.ts`** — Home page sidecard: **GPU** split into type, **VRAM**, and **FLOPS** (e.g. `23.7 TFLOPS FP32`), plus **CPU** and **RAM**. Update when the lab image changes (GPU/VRAM can be checked with `nvidia-smi`).
+- **`frontend/src/HomePage.tsx`** — Landing: hero, hardware sidecard, and two **CTA** columns (playground + adventure) each with header, subheader, one featured card from the sorted registry, and a prominent **See all** button.
 - **`frontend/src/NavHoverGroup.tsx`** — App bar hover menus: MUI `Popper` (with `disablePortal`) anchored to each hub label, slight vertical overlap and a small invisible hit-area so the pointer can reach items without crossing a dead gap.
-- **`frontend/src/modules/types.ts`** — Shared `ModuleMeta` type (`navGroup`, `slug`, `title`, `description`, optional `order`).
+- **`frontend/src/modules/types.ts`** — Shared `ModuleMeta` type (`navGroup`, `slug`, `title`, `description`, optional `order`, optional `thumbnailUrl` / `thumbnailAlt` for hub cards). Put image files under **`frontend/public/`** (e.g. `thumbnailUrl: '/images/foo.png'`).
 - **`frontend/src/modules/registry.ts`** — Imports each module’s `meta`, lazy-loads its page component, and exports:
   - `RegisteredModule` (shared shape), plus type aliases `RegisteredPlayground` / `RegisteredAdventure`
   - `DEFAULT_MODULE_ORDER` — sort key when `meta.order` is omitted
@@ -53,6 +55,7 @@ Legacy aliases (if present in `App.tsx`) keep old bookmarks working; prefer link
    - `slug: '<your-slug>'` (should match the folder name)
    - `title`, `description`
    - Optional `order` (lower numbers appear first on the hub; if omitted, the module sorts using `DEFAULT_MODULE_ORDER` in `registry.ts`, i.e. after any module that sets `order`)
+   - Optional `thumbnailUrl` / `thumbnailAlt` (file under **`frontend/public/`**, URL path like `/images/...`)
 3. Add the page component (e.g. **`Page.tsx`**) with a `default export` React component.
 4. Edit **`frontend/src/modules/registry.ts`**:
    - `import` the meta
