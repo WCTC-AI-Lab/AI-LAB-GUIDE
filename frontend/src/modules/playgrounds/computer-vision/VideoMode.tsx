@@ -651,7 +651,7 @@ export default function VideoMode() {
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
                       Clip window: {formatTime(clipStart)} → {formatTime(clipEnd)}
-                      &nbsp;·&nbsp;{CLIP_DURATION_S}s&nbsp;·&nbsp;{MAX_CLIP_FRAMES} frames evenly spaced
+                      &nbsp;·&nbsp;{MAX_CLIP_FRAMES} consecutive frames from here
                     </Typography>
                     {isExtracting ? (
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>

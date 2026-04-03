@@ -370,10 +370,16 @@ def _extract_clip_worker(
                     pass
                 break
 
-        # Compute clip bounds, clamped to video length
-        half = clip_duration / 2.0
-        clip_start = max(0.0, center_time - half)
-        clip_end = min(video_duration, center_time + half)
+        # Compute clip bounds, clamped to video length.
+        # "consecutive" starts at the current frame and runs forward;
+        # other strategies use a symmetric window around center_time.
+        if strategy == "consecutive":
+            clip_start = max(0.0, center_time)
+            clip_end   = video_duration  # ffmpeg will stop at -frames:v anyway
+        else:
+            half = clip_duration / 2.0
+            clip_start = max(0.0, center_time - half)
+            clip_end   = min(video_duration, center_time + half)
         actual_duration = max(clip_end - clip_start, 0.001)
 
         # Build ffmpeg fps filter and frame cap based on strategy
