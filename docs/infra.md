@@ -47,11 +47,20 @@ pm2-startup install
 > **CRITICAL:** You must use `pythonw.exe` (windowless Python) instead of `python.exe`.  
 > If you use standard `python.exe`, Windows will show a persistent command prompt box that cannot be closed without killing the server.
 
-1. Open a terminal and navigate to your project root (where `run_server.py` is located).
-2. Start the server with PM2:
+> **SAM Playground note:** The SAM3 model requires its own Python environment.  
+> Use `C:\Users\AI-Lab\Desktop\SAM3\venv\Scripts\pythonw.exe` instead of the project venv's Python.  
+> Flask, Waitress, and Ollama have been installed into that environment.
+
+1. Open a terminal and navigate to your project root (where `run_waitress.py` is located).
+2. Start the server with PM2 using the SAM3 venv:
 
 ```sh
-pm2 start venv\Scripts\pythonw.exe --name "AILabGuide" -- run_waitress.py
+pm2 start "C:\Users\AI-Lab\Desktop\SAM3\venv\Scripts\pythonw.exe" --name "AILabGuide" -- run_waitress.py
+```
+
+For quick dev runs (no PM2):
+```sh
+C:\Users\AI-Lab\Desktop\SAM3\venv\Scripts\python.exe app.py
 ```
 
 > _Note: If your virtual environment is named differently, adjust the path to `pythonw.exe` accordingly._
