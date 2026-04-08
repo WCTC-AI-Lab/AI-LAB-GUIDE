@@ -6,7 +6,15 @@ echo [%date% %time%] Starting Auto-Update Check...
 cd /d "C:\Users\AI-Lab\Desktop\AI-LAB-GUIDE\"
 
 :: ── HuggingFace auth (needed to download SAM3 weights on first use) ──────────
-set HF_TOKEN=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
+:: Token lives in secrets.bat (gitignored) — never committed to source control.
+:: Create secrets.bat once on each machine:
+::   echo set HF_TOKEN=hf_YOUR_TOKEN_HERE > secrets.bat
+IF EXIST "secrets.bat" (
+    call secrets.bat
+) ELSE (
+    echo [%date% %time%] WARNING: secrets.bat not found. SAM3 model download may fail.
+    echo [%date% %time%]          Create secrets.bat with: set HF_TOKEN=hf_YOUR_TOKEN_HERE
+)
 
 :: ── One-time bootstrap (safe to run on every reboot) ─────────────────────────
 
