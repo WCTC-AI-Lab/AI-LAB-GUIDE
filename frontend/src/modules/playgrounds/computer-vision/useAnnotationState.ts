@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import type React from 'react';
-import { PALETTE } from './MaskList';
+import { PALETTE } from './palette';
 import type {
   AcceptedObject,
   ActiveTool,
@@ -145,7 +145,6 @@ export function useAnnotationState(
     setObjectCounter(restoredCounter);
     setSoloedId(null);
     setError(null);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sourceKey]);
 
   const runSegmentation = useCallback(async () => {
@@ -258,9 +257,9 @@ export function useAnnotationState(
     };
     setAccepted((prev) => [...prev, newObj]);
     setObjectCounter((n) => n + 1);
-    setPoints([]); setBox(null);
-    setCandidates([]); setSelectedCandidateId(null);
-  }, [candidates, accepted.length, objectCounter]);
+    setCandidates((prev) => prev.filter((m) => m.id !== id));
+    setSelectedCandidateId(null);
+  }, [candidates, accepted.length, objectCounter, points, box, text]);
 
   const handleToggleAcceptedVisibility = useCallback((id: string) => {
     setAccepted((prev) =>

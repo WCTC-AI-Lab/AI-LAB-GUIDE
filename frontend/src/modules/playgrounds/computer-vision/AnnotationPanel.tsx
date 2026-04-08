@@ -23,7 +23,7 @@ export default function AnnotationPanel({ imageUrl, state }: AnnotationPanelProp
   const {
     mode, setMode, activeTool, setActiveTool,
     text, setText, confidence, setConfidence,
-    allMasks, selectedCandidateId, setSelectedCandidateId,
+    allMasks, selectedCandidateId,
     soloedId, showBboxOverlay, showAnnotations,
     toggleBboxOverlay, toggleAnnotations,
     isLoading, error, setError, hasPrompts,

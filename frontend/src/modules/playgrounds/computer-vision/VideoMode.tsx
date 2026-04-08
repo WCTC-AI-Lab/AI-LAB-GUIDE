@@ -241,7 +241,6 @@ export default function VideoMode() {
         if (data.videos.length > 0) setSelectedVideo(data.videos[data.videos.length - 1]);
       })
       .catch(() => setError('Could not load video list from backend.'));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ── Frame step-play ───────────────────────────────────────────────────────
@@ -414,7 +413,6 @@ export default function VideoMode() {
     } finally {
       setIsTracking(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isTracking, selectedVideo, annotation, currentFrame, frames, selectedTrackIds]);
 
   // ── Helpers ───────────────────────────────────────────────────────────────

@@ -67,12 +67,14 @@ export default function SegmentationCanvas({
   const [naturalSize, setNaturalSize] = useState({ w: 0, h: 0 });
   const [flashingMaskId, setFlashingMaskId] = useState<string | null>(null);
 
-  // When a mask is soloed, flash it so the eye is drawn to it
+  // When a mask is soloed, flash it briefly. Both setters are deferred so the
+  // effect doesn't call setState synchronously (react-hooks/set-state-in-effect).
   useEffect(() => {
     if (!soloedMaskId) return;
-    setFlashingMaskId(soloedMaskId);
-    const t = setTimeout(() => setFlashingMaskId(null), 650);
-    return () => clearTimeout(t);
+    const id = soloedMaskId;
+    const t1 = setTimeout(() => setFlashingMaskId(id), 0);
+    const t2 = setTimeout(() => setFlashingMaskId(null), 650);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
   }, [soloedMaskId]);
 
   // Drag state for bounding-box drawing
