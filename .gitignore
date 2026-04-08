@@ -1,2 +1,17 @@
-.azure
-/__pycache__
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+
+/assets/frames/
+
+# Azure / azd (no longer used)
+.azure/
+
+# OS
+.DS_Store
+Thumbs.db

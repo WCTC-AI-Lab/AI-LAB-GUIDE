@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -28,7 +28,7 @@ interface NavHoverGroupProps {
 
 export default function NavHoverGroup({ label, hubTo, links }: NavHoverGroupProps) {
   const [open, setOpen] = useState(false);
-  const anchorRef = useRef<HTMLDivElement>(null);
+  const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
 
   return (
     <Box
@@ -42,14 +42,14 @@ export default function NavHoverGroup({ label, hubTo, links }: NavHoverGroupProp
         alignSelf: 'center',
       }}
     >
-      <Box ref={anchorRef}>
+      <Box ref={setAnchorEl}>
         <Button color="inherit" component={Link} to={hubTo}>
           {label}
         </Button>
       </Box>
       <Popper
         open={open && links.length > 0}
-        anchorEl={anchorRef.current}
+        anchorEl={anchorEl}
         placement="bottom-start"
         disablePortal
         modifiers={[{ name: 'offset', options: { offset: [0, -MENU_OVERLAP_PX] } }]}

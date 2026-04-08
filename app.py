@@ -2,12 +2,14 @@ from flask import Flask, send_from_directory, request, jsonify
 import os
 import math
 import ollama
+from sam_api import sam_bp
 
 # Serve frontend build from frontend/dist (path relative to this file so CWD doesn't matter)
 _ROOT = os.path.abspath(os.path.dirname(__file__))
 _FRONTEND_DIST = os.path.join(_ROOT, 'frontend', 'dist')
 
 app = Flask(__name__, static_folder=_FRONTEND_DIST, static_url_path='')
+app.register_blueprint(sam_bp)
 
 AVAILABLE_MODELS = ["gpt-oss:20b", "gemma3:27b"]
 
@@ -28,6 +30,8 @@ def serve_index():
 
 @app.route('/<path:path>')
 def serve_static(path):
+    if path.startswith('api/'):
+        return jsonify({"error": "Not found"}), 404
     return send_from_directory(app.static_folder, path)
 
 @app.route('/api/models', methods=['GET'])
@@ -96,5 +100,7 @@ def predict_next_token():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
+    # Default to 5001 for local dev so it doesn't clash with the PM2 production
+    # instance on 5000. Set PORT=5000 in the PM2 ecosystem config for production.
+    port = int(os.environ.get('PORT', 5001))
     app.run(host='0.0.0.0', port=port, debug=True)
