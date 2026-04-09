@@ -9,6 +9,9 @@ __pycache__/
 
 /assets/frames/
 
+# Local secrets (never commit)
+secrets.bat
+
 # Azure / azd (no longer used)
 .azure/
 
