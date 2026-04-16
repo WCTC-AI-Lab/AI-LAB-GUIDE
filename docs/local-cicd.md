@@ -41,7 +41,7 @@ The `git reset --hard` in the update script will **not** touch this file because
 2. Click **Create Task...** (not "Create Basic Task").
 3. **General tab:**
    - Name: `AI Lab Guide Auto-Updater`
-   - Check **Run with highest privileges**
+   - Do **NOT** check "Run with highest privileges" — elevated tasks create elevated PM2 daemons, which then reject connections from non-elevated terminals (`EPERM //./pipe/rpc.sock`)
 4. **Triggers tab → New:**
    - Begin the task: **At startup**
 5. **Actions tab → New:**

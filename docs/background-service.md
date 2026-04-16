@@ -72,29 +72,32 @@ This is intentionally aggressive — it handles every known bad state (stale dae
 
 If PM2 is stuck, showing empty process lists, or the app isn't responding, run these commands in order:
 
-```powershell
-# 1. Kill the PM2 daemon (may hang 60-90s if daemon is stuck — that's fine)
-pm2 kill
+If you get `EPERM //./pipe/rpc.sock`, the PM2 daemon was started **elevated** (by Task Scheduler with "Run with highest privileges"). You must use an **Administrator cmd** to kill it, or the commands below will fail with "Access denied".
 
-# 2. If pm2 kill hangs forever, Ctrl+C and force-kill all node/waitress processes:
-taskkill /F /IM waitress-serve.exe
-# Find the PM2 daemon PID:
-Get-Content $env:USERPROFILE\.pm2\pm2.pid
-# Kill it:
+```cmd
+:: Open cmd as Administrator first if you get Access Denied errors!
+
+:: 1. Kill the PM2 daemon process directly
+type %USERPROFILE%\.pm2\pm2.pid
+:: Note the PID, then:
 taskkill /F /PID <the_pid>
 
-# 3. Clear stale PM2 state files
-Remove-Item $env:USERPROFILE\.pm2\dump.pm2 -ErrorAction SilentlyContinue
-Remove-Item $env:USERPROFILE\.pm2\pm2.pid -ErrorAction SilentlyContinue
+:: 2. Kill any waitress
+taskkill /F /IM waitress-serve.exe
 
-# 4. Start fresh
-cd C:\Users\AI-Lab\Desktop\AI-LAB-GUIDE
+:: 3. Nuke the entire PM2 home directory (clears stale pipes/state)
+rmdir /S /Q %USERPROFILE%\.pm2
+
+:: 4. Start fresh (from a normal, non-elevated terminal)
+cd /d C:\Users\AI-Lab\Desktop\AI-LAB-GUIDE
 pm2 start ecosystem.config.js
 pm2 save
 
-# 5. Verify
+:: 5. Verify
 pm2 status
-# Should show AILabGuide as "online"
+:: Should show AILabGuide as "online"
 ```
+
+**Important:** After recovery, fix the Task Scheduler task — uncheck "Run with highest privileges" so this doesn't happen again. See `docs/local-cicd.md`.
 
 If the machine is completely hosed, see the **Fresh Install** section in the README.
