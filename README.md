@@ -8,7 +8,7 @@ Runs entirely locally on each lab Windows machine — no cloud, no external serv
 
 ## External Dependencies (install once, manually)
 
-These must be present on the machine before running `setup.ps1`. Use [winget](https://learn.microsoft.com/windows/package-manager/winget/) or the linked installers.
+These must be present on the machine before the first run. Use [winget](https://learn.microsoft.com/windows/package-manager/winget/) or the linked installers.
 
 | Tool | Purpose | Install |
 |---|---|---|
@@ -19,9 +19,9 @@ These must be present on the machine before running `setup.ps1`. Use [winget](ht
 | Ollama | Local LLM inference | `winget install -e --id Ollama.Ollama` |
 | NVIDIA drivers + CUDA 13.0 | GPU support for SAM3 | Via NVIDIA website |
 
-After installing, **restart PowerShell** so PATH updates take effect.
+After installing external dependencies, **restart PowerShell** so PATH updates take effect.
 
-Also install the PM2 process manager (requires Node.js):
+Install PM2 globally:
 
 ```powershell
 npm install -g pm2 pm2-windows-startup
@@ -30,28 +30,62 @@ pm2-startup install
 
 ---
 
-## SAM3 Model Checkpoint (one-time)
+## First-Time Setup (new machine)
 
-You will need to download the SAM3 model checkpoint and place it where `sam_api.py` expects it. See `SAM_PLAYGROUND_SPEC.md` for details.
+```powershell
+# 1. Clone the repo
+git clone https://github.com/YOUR-ORG/AI-LAB-GUIDE C:\Users\AI-Lab\Desktop\AI-LAB-GUIDE
 
-The SAM3 package itself is installed automatically by `auto_update.bat` from [our fork](https://github.com/jroberts-fellow/sam3-AI-LAB-GUIDE) — no manual clone needed. The fork includes a Windows compatibility fix (triton → scipy fallback).
+# 2. Create the secrets file (needed for SAM3 model download)
+cd C:\Users\AI-Lab\Desktop\AI-LAB-GUIDE
+echo set HF_TOKEN=hf_YOUR_TOKEN_HERE > secrets.bat
+
+# 3. Run the update script manually for the first time
+auto_update.bat
+# This creates the venv, installs all deps (PyTorch CUDA, SAM3, etc.),
+# builds the frontend, and starts the app via PM2.
+# First run takes 10-20 minutes (PyTorch download is large).
+
+# 4. Verify the app is running
+pm2 status
+# Should show AILabGuide as "online"
+# Open http://localhost:5000 in a browser
+
+# 5. Set up Task Scheduler for auto-updates on reboot
+# See docs/local-cicd.md for step-by-step instructions
+```
+
+The SAM3 package is installed automatically from [our fork](https://github.com/jroberts-fellow/sam3-AI-LAB-GUIDE) (includes a Windows compatibility fix). The SAM3 model checkpoint is downloaded automatically via HuggingFace Hub using the token in `secrets.bat`.
 
 ---
 
-## First-Time Setup (new machine)
+## Fresh Install (nuke and rebuild)
 
-Clone the repo, register the Task Scheduler task, and reboot. `auto_update.bat` handles everything else automatically on first run:
-
-- Creates the Python `venv`
-- Installs all dependencies from `requirements.txt`
-- Installs PyTorch with CUDA 13.0 support
-- Installs SAM3 from the fork
+If a machine is in a broken state (PM2 stuck, merge conflicts, stale venv), start over:
 
 ```powershell
+# 1. Kill everything
+pm2 kill
+taskkill /F /IM waitress-serve.exe 2>$null
+
+# 2. Delete the old repo
+Remove-Item -Recurse -Force C:\Users\AI-Lab\Desktop\AI-LAB-GUIDE
+
+# 3. Clone fresh
 git clone https://github.com/YOUR-ORG/AI-LAB-GUIDE C:\Users\AI-Lab\Desktop\AI-LAB-GUIDE
+
+# 4. Recreate secrets
+cd C:\Users\AI-Lab\Desktop\AI-LAB-GUIDE
+echo set HF_TOKEN=hf_YOUR_TOKEN_HERE > secrets.bat
+
+# 5. Run the update script (bootstraps everything)
+auto_update.bat
+
+# 6. Verify
+pm2 status
 ```
 
-Then register the Task Scheduler task (see `docs/local-cicd.md`) and reboot.
+The Task Scheduler task does not need to be recreated — it points to the same path.
 
 ---
 
@@ -69,7 +103,7 @@ Opens two terminal windows:
 
 ## Production (background service)
 
-The app runs silently via PM2 + Waitress. See `docs/background-service.md` for setup.
+The app runs silently via PM2 + Waitress. See `docs/background-service.md` for details.
 
 Auto-updates from `master` are handled by Windows Task Scheduler + `auto_update.bat`. See `docs/local-cicd.md` for setup.
 
@@ -79,7 +113,7 @@ Auto-updates from `master` are handled by Windows Task Scheduler + `auto_update.
 
 | Doc | What it covers |
 |---|---|
-| `docs/background-service.md` | PM2 + Waitress background service setup |
+| `docs/background-service.md` | PM2 + Waitress background service setup and recovery |
 | `docs/local-cicd.md` | Pull-based auto-update via Task Scheduler |
 | `docs/frontend-structure.md` | React module/registry architecture |
 | `SAM_PLAYGROUND_SPEC.md` | SAM3 playground feature spec |

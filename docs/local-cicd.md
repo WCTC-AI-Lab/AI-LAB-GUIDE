@@ -1,59 +1,98 @@
 # Local CI/CD: Auto-Updating the Lab Machines
 
-Each lab machine runs a **pull-based auto-update**: a Windows Task Scheduler job wakes up at startup (or on a schedule), checks GitHub for new commits on `master`, pulls them, rebuilds the frontend, updates Python deps, and restarts the PM2 service — all silently in the background.
+Each lab machine runs a **pull-based auto-update**: a Windows Task Scheduler job runs at startup, force-syncs to `origin/master`, bootstraps any missing dependencies, rebuilds the frontend, and restarts the app — all silently in the background.
 
 ---
 
 ## How It Works
 
-1. `auto_update.bat` fetches the remote `master` branch and counts new commits.
-2. If up to date, it exits immediately.
-3. If behind, it pulls, runs `npm install && npm run build` in `frontend/`, updates Python deps via `pip install -r requirements.txt`, and restarts PM2.
+`auto_update.bat` runs these steps in order:
 
-> **Note:** PyTorch and the `sam3` editable install are set up once via `setup.ps1` and are **not** reinstalled during auto-updates. If either ever needs updating, re-run `setup.ps1` manually.
+1. **Load secrets** — sources `secrets.bat` (gitignored) for the HuggingFace token.
+2. **Git sync** — `git checkout master && git fetch origin master && git reset --hard origin/master`. This forces the local repo to exactly match the remote, discarding any local changes. No merge conflicts possible.
+3. **Bootstrap** (first run only, guarded by checks):
+   - Creates the Python `venv` if missing
+   - Installs PyTorch with CUDA support if `import torch` fails
+   - Installs SAM3 from the fork if `import sam3` fails
+4. **Rebuild frontend** — `npm install && npm run build`
+5. **Update Python deps** — `pip install -r requirements.txt`
+6. **Restart app** — `pm2 kill` → `taskkill waitress` → `pm2 start ecosystem.config.js`
+
+All output is redirected to `auto_update.log` in the project root for debugging.
+
+---
+
+## secrets.bat
+
+The HuggingFace token (needed to download SAM3 model weights) lives in a gitignored file at the project root. Create it once on each machine:
+
+```cmd
+cd C:\Users\AI-Lab\Desktop\AI-LAB-GUIDE
+echo set HF_TOKEN=hf_YOUR_TOKEN_HERE > secrets.bat
+```
+
+The `git reset --hard` in the update script will **not** touch this file because it's in `.gitignore`.
 
 ---
 
 ## Windows Task Scheduler Setup
 
-To run `auto_update.bat` silently at startup:
-
 1. Open **Task Scheduler** from the Start Menu.
 2. Click **Create Task...** (not "Create Basic Task").
 3. **General tab:**
    - Name: `AI Lab Guide Auto-Updater`
-   - Check **Run whether user is logged on or not**
    - Check **Run with highest privileges**
 4. **Triggers tab → New:**
    - Begin the task: **At startup**
 5. **Actions tab → New:**
    - Action: **Start a program**
-   - Program/script: browse to `auto_update.bat` in the project root
-   - **Start in (optional):** paste the project root path (e.g. `C:\Users\AI-Lab\Desktop\AI-LAB-GUIDE`)
+   - Program/script: `C:\Users\AI-Lab\Desktop\AI-LAB-GUIDE\auto_update.bat`
+   - **Start in:** `C:\Users\AI-Lab\Desktop\AI-LAB-GUIDE`
 6. **Conditions tab:**
    - Check **Start only if the following network connection is available → Any connection**
-7. Save (Windows will prompt for your admin password).
+7. **Settings tab:**
+   - Check **Allow task to be run on demand**
+   - Set **Stop the task if it runs longer than:** `1 hour` (safety net)
+8. Save (Windows will prompt for your admin password).
+
+**Enable history** (one-time): In Task Scheduler, click the machine name in the left panel, then **Action → Enable All Tasks History** in the top menu bar.
 
 ---
 
 ## Testing the Updater
 
-At any time you can trigger a manual update run:
-
-1. Open **Task Scheduler**
-2. Find `AI Lab Guide Auto-Updater` in the library
-3. Right-click → **Run**
-
-Or just run the script directly from a terminal:
+Run the script manually from a terminal:
 
 ```cmd
 cd C:\Users\AI-Lab\Desktop\AI-LAB-GUIDE
 auto_update.bat
 ```
 
+Then check the log:
+
+```powershell
+Get-Content auto_update.log
+```
+
+Or trigger it via Task Scheduler: right-click the task → **Run**.
+
 ---
 
-## Windows Batch Quirks (for reference)
+## Debugging
 
-- Use `cd /d` to change drives (e.g. if the script runs from `C:` but the project is on `D:`).
-- Always use `call` before `pip` and `pm2` — they are `.cmd` executables, and without `call`, Windows terminates the entire batch script as soon as that command finishes.
+| Symptom | Check |
+|---|---|
+| App not running after reboot | `Get-Content auto_update.log` — look for errors |
+| PM2 shows empty process list | See recovery steps in `docs/background-service.md` |
+| Git sync failed | Check if network was available at boot; re-run manually |
+| SAM3 import fails | Check `secrets.bat` exists and HF token is valid |
+| Script seems stuck | Check for orphaned `cmd.exe` holding `auto_update.log` open |
+
+---
+
+## Batch Script Quirks
+
+- Use `cd /d` to change drives.
+- Always use `call` before `pip`, `npm`, and `pm2` — they are `.cmd` executables, and without `call`, Windows terminates the entire batch script.
+- Avoid Unicode characters in `.bat` files — the Windows command interpreter can't parse them.
+- Output redirection (`> file 2>&1`) locks the log file — if a previous run is stuck, the next run can't write to the log.
