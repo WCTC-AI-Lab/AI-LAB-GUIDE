@@ -8,6 +8,16 @@ exit /b %ERRORLEVEL%
 echo [%date% %time%] Starting auto-update...
 
 :: --------------------------------------------------------------------------
+:: Environment fix for Task Scheduler.
+:: Task Scheduler does not always set HOMEPATH, which breaks PM2
+:: (it defaults to C:\etc\.pm2 instead of the user's home).
+:: --------------------------------------------------------------------------
+if "%HOMEPATH%"=="" set "HOMEPATH=\Users\AI-Lab"
+if "%HOMEDRIVE%"=="" set "HOMEDRIVE=C:"
+set "PM2_HOME=C:\Users\AI-Lab\.pm2"
+echo [%date% %time%] PM2_HOME=%PM2_HOME%
+
+:: --------------------------------------------------------------------------
 :: HuggingFace auth
 :: Token lives in secrets.bat (gitignored). Create it once on each machine:
 ::   echo set HF_TOKEN=hf_YOUR_TOKEN_HERE > secrets.bat
@@ -37,15 +47,29 @@ echo [%date% %time%] Git sync done.
 IF NOT EXIST "venv\Scripts\python.exe" (
     echo [%date% %time%] Creating Python venv...
     python -m venv venv
-    echo [%date% %time%] Installing Python dependencies...
-    call venv\Scripts\pip.exe install -r requirements.txt
 )
 
-venv\Scripts\python.exe -c "import torch" 2>NUL || (
+:: --------------------------------------------------------------------------
+:: PyTorch CUDA must be installed BEFORE requirements.txt, because timm
+:: depends on torch and pip will pull in CPU-only torch from PyPI if torch
+:: is not already present. We check for CUDA specifically, not just torch.
+:: --------------------------------------------------------------------------
+venv\Scripts\python.exe -c "import torch; assert torch.cuda.is_available()" 2>NUL || (
     echo [%date% %time%] Installing PyTorch with CUDA support...
     call venv\Scripts\pip.exe install torch==2.10.0+cu130 torchaudio==2.10.0+cu130 torchvision==0.25.0+cu130 --index-url https://download.pytorch.org/whl/cu130
 )
 
+:: --------------------------------------------------------------------------
+:: Now install/update Python dependencies. torch is already present with
+:: CUDA, so pip will skip pulling CPU torch when resolving timm's deps.
+:: --------------------------------------------------------------------------
+echo [%date% %time%] Installing/updating Python dependencies...
+call venv\Scripts\pip.exe install -r requirements.txt
+
+:: --------------------------------------------------------------------------
+:: SAM3 from our Windows-patched fork (--no-deps because deps are in
+:: requirements.txt already).
+:: --------------------------------------------------------------------------
 venv\Scripts\python.exe -c "import sam3" 2>NUL || (
     echo [%date% %time%] Installing SAM3 from fork...
     call venv\Scripts\pip.exe install --no-deps "git+https://github.com/jroberts-fellow/sam3-AI-LAB-GUIDE.git"
@@ -61,18 +85,11 @@ call npm run build
 cd ..
 
 :: --------------------------------------------------------------------------
-:: Update Python dependencies
-:: --------------------------------------------------------------------------
-echo [%date% %time%] Updating Python dependencies...
-call venv\Scripts\pip.exe install -r requirements.txt
-
-:: --------------------------------------------------------------------------
 :: Start the app via PM2.
 :: Always kill the daemon first to clear any broken socket state,
 :: then start fresh from the ecosystem file.
-:: PM2 kill can take 60-90 seconds if the daemon is hung - that is normal.
 :: --------------------------------------------------------------------------
-echo [%date% %time%] Stopping PM2 daemon (may take up to 90s)...
+echo [%date% %time%] Stopping PM2 daemon...
 call pm2 kill
 echo [%date% %time%] Killing any orphaned waitress processes...
 taskkill /F /IM waitress-serve.exe >NUL 2>&1
