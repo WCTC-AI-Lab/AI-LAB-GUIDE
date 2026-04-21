@@ -16,5 +16,13 @@ module.exports = {
       autorestart: true,
       watch: false,
     },
+    {
+      name: 'RAGBuilder',
+      script: '.venv/Scripts/streamlit.exe',
+      args: 'run src/app.py --server.port 8502',
+      cwd: 'C:/Users/AI-Lab/Desktop/BotBuilder',
+      autorestart: true,
+      watch: false,
+    },
   ],
 };

@@ -66,6 +66,30 @@ echo [%date% %time%] Installing Teachable Trainer dependencies...
 call "%TRAINER_DIR%\.venv\Scripts\pip.exe" install -r "%TRAINER_DIR%\requirements.txt"
 
 :: --------------------------------------------------------------------------
+:: RAG Builder Studio (BotBuilder) -- separate repo + venv
+:: --------------------------------------------------------------------------
+set "RAG_DIR=C:\Users\AI-Lab\Desktop\BotBuilder"
+
+IF NOT EXIST "%RAG_DIR%\.git" (
+    echo [%date% %time%] Cloning RAG Builder Studio...
+    git clone https://github.com/WCTC-AI-Lab/BotBuilder.git "%RAG_DIR%"
+) ELSE (
+    echo [%date% %time%] Updating RAG Builder Studio...
+    cd /d "%RAG_DIR%"
+    git fetch origin main
+    git reset --hard origin/main
+    cd /d "C:\Users\AI-Lab\Desktop\AI-LAB-GUIDE"
+)
+
+IF NOT EXIST "%RAG_DIR%\.venv\Scripts\python.exe" (
+    echo [%date% %time%] Creating RAG Builder Studio venv...
+    python -m venv "%RAG_DIR%\.venv"
+)
+
+echo [%date% %time%] Installing RAG Builder Studio dependencies...
+call "%RAG_DIR%\.venv\Scripts\pip.exe" install -e "%RAG_DIR%[local]"
+
+:: --------------------------------------------------------------------------
 :: Start everything via PM2
 :: --------------------------------------------------------------------------
 echo [%date% %time%] Stopping PM2 daemon...
