@@ -42,6 +42,30 @@ call npm run build
 cd ..
 
 :: --------------------------------------------------------------------------
+:: Teachable Trainer (image-classifier) -- separate repo + venv
+:: --------------------------------------------------------------------------
+set "TRAINER_DIR=C:\Users\AI-Lab\Desktop\image-classifier"
+
+IF NOT EXIST "%TRAINER_DIR%\.git" (
+    echo [%date% %time%] Cloning Teachable Trainer...
+    git clone https://github.com/WCTC-AI-Lab/image-classifier.git "%TRAINER_DIR%"
+) ELSE (
+    echo [%date% %time%] Updating Teachable Trainer...
+    cd /d "%TRAINER_DIR%"
+    git fetch origin main
+    git reset --hard origin/main
+    cd /d "C:\Users\AI-Lab\Desktop\AI-LAB-GUIDE"
+)
+
+IF NOT EXIST "%TRAINER_DIR%\.venv\Scripts\python.exe" (
+    echo [%date% %time%] Creating Teachable Trainer venv...
+    python -m venv "%TRAINER_DIR%\.venv"
+)
+
+echo [%date% %time%] Installing Teachable Trainer dependencies...
+call "%TRAINER_DIR%\.venv\Scripts\pip.exe" install -r "%TRAINER_DIR%\requirements.txt"
+
+:: --------------------------------------------------------------------------
 :: Start everything via PM2
 :: --------------------------------------------------------------------------
 echo [%date% %time%] Stopping PM2 daemon...

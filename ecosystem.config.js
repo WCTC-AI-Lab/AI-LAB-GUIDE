@@ -8,5 +8,13 @@ module.exports = {
       autorestart: true,
       watch: false,
     },
+    {
+      name: 'TeachableTrainer',
+      script: '.venv/Scripts/streamlit.exe',
+      args: 'run app/main.py --server.port 8501',
+      cwd: 'C:/Users/AI-Lab/Desktop/image-classifier',
+      autorestart: true,
+      watch: false,
+    },
   ],
 };
