@@ -2,11 +2,13 @@ import { lazy, type LazyExoticComponent, type ComponentType } from 'react';
 import { llmExploreMeta } from './playgrounds/llm-explore/meta';
 import { computerVisionMeta } from './playgrounds/computer-vision/meta';
 import { vibeGameMakerMeta } from './adventures/vibe-game-maker/meta';
+import { teachableTrainerMeta } from './adventures/teachable-trainer/meta';
 import type { ModuleMeta } from './types';
 
 const LLMExplorePage = lazy(() => import('./playgrounds/llm-explore/LLMExplorePage'));
 const ComputerVisionPlaygroundPage = lazy(() => import('./playgrounds/computer-vision/Page'));
 const VibeGameMakerAdventurePage = lazy(() => import('./adventures/vibe-game-maker/Page'));
+const TeachableTrainerPage = lazy(() => import('./adventures/teachable-trainer/Page'));
 
 export { LLMExplorePage, VibeGameMakerAdventurePage };
 
@@ -28,6 +30,7 @@ export const playgroundModules: RegisteredPlayground[] = [
 
 export const adventureModules: RegisteredAdventure[] = [
   { meta: vibeGameMakerMeta, Page: VibeGameMakerAdventurePage },
+  { meta: teachableTrainerMeta, Page: TeachableTrainerPage },
 ];
 
 function sortByOrder<T extends { meta: ModuleMeta }>(a: T, b: T): number {
