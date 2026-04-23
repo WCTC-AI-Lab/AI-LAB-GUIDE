@@ -62,6 +62,13 @@ IF NOT EXIST "%TRAINER_DIR%\.venv\Scripts\python.exe" (
     py -3.11 -m venv "%TRAINER_DIR%\.venv"
 )
 
+:: Install PyTorch CUDA before requirements.txt -- same reason as main venv.
+:: Pin to a specific cu126 wheel to guarantee GPU build.
+"%TRAINER_DIR%\.venv\Scripts\python.exe" -c "import torch; assert torch.cuda.is_available()" 2>NUL || (
+    echo [%date% %time%] Installing PyTorch CUDA for Teachable Trainer...
+    call "%TRAINER_DIR%\.venv\Scripts\pip.exe" install torch==2.6.0+cu126 torchvision==0.21.0+cu126 --index-url https://download.pytorch.org/whl/cu126
+)
+
 echo [%date% %time%] Installing Teachable Trainer dependencies...
 call "%TRAINER_DIR%\.venv\Scripts\pip.exe" install -r "%TRAINER_DIR%\requirements.txt"
 
@@ -84,6 +91,12 @@ IF NOT EXIST "%RAG_DIR%\.git" (
 IF NOT EXIST "%RAG_DIR%\.venv\Scripts\python.exe" (
     echo [%date% %time%] Creating RAG Builder Studio venv with Python 3.11...
     py -3.11 -m venv "%RAG_DIR%\.venv"
+)
+
+:: Install PyTorch CUDA before the editable install -- same reason as other venvs.
+"%RAG_DIR%\.venv\Scripts\python.exe" -c "import torch; assert torch.cuda.is_available()" 2>NUL || (
+    echo [%date% %time%] Installing PyTorch CUDA for RAG Builder...
+    call "%RAG_DIR%\.venv\Scripts\pip.exe" install torch==2.6.0+cu126 torchvision==0.21.0+cu126 --index-url https://download.pytorch.org/whl/cu126
 )
 
 echo [%date% %time%] Installing RAG Builder Studio dependencies...
