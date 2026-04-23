@@ -11,7 +11,7 @@ module.exports = {
     {
       name: 'TeachableTrainer',
       script: '.venv/Scripts/streamlit.exe',
-      args: 'run app/main.py --server.port 8501',
+      args: 'run app/main.py --server.port 8501 --server.enableCORS false --server.enableXsrfProtection false --server.headless true',
       cwd: 'C:/Users/AI-Lab/Desktop/image-classifier',
       autorestart: true,
       watch: false,
@@ -19,7 +19,7 @@ module.exports = {
     {
       name: 'RAGBuilder',
       script: '.venv/Scripts/streamlit.exe',
-      args: 'run src/app.py --server.port 8502',
+      args: 'run src/app.py --server.port 8502 --server.enableCORS false --server.enableXsrfProtection false --server.headless true',
       cwd: 'C:/Users/AI-Lab/Desktop/BotBuilder',
       autorestart: true,
       watch: false,
