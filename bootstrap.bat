@@ -58,8 +58,8 @@ IF NOT EXIST "%TRAINER_DIR%\.git" (
 )
 
 IF NOT EXIST "%TRAINER_DIR%\.venv\Scripts\python.exe" (
-    echo [%date% %time%] Creating Teachable Trainer venv...
-    python -m venv "%TRAINER_DIR%\.venv"
+    echo [%date% %time%] Creating Teachable Trainer venv with Python 3.11...
+    py -3.11 -m venv "%TRAINER_DIR%\.venv"
 )
 
 echo [%date% %time%] Installing Teachable Trainer dependencies...
@@ -82,8 +82,8 @@ IF NOT EXIST "%RAG_DIR%\.git" (
 )
 
 IF NOT EXIST "%RAG_DIR%\.venv\Scripts\python.exe" (
-    echo [%date% %time%] Creating RAG Builder Studio venv...
-    python -m venv "%RAG_DIR%\.venv"
+    echo [%date% %time%] Creating RAG Builder Studio venv with Python 3.11...
+    py -3.11 -m venv "%RAG_DIR%\.venv"
 )
 
 echo [%date% %time%] Installing RAG Builder Studio dependencies...
