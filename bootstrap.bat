@@ -48,9 +48,12 @@ set "TRAINER_DIR=C:\Users\AI-Lab\Desktop\image-classifier"
 
 IF NOT EXIST "%TRAINER_DIR%\.git" (
     echo [%date% %time%] Cloning Teachable Trainer...
-    git clone https://github.com/WCTC-AI-Lab/image-classifier.git "%TRAINER_DIR%"
+    git clone --depth 1 https://github.com/WCTC-AI-Lab/image-classifier.git "%TRAINER_DIR%"
 ) ELSE (
     echo [%date% %time%] Updating Teachable Trainer...
+    :: Remove any stale git lock files from interrupted previous runs
+    del /F /Q "%TRAINER_DIR%\.git\index.lock" 2>NUL
+    del /F /Q "%TRAINER_DIR%\.git\HEAD.lock" 2>NUL
     cd /d "%TRAINER_DIR%"
     git fetch origin main
     git reset --hard origin/main
@@ -79,9 +82,12 @@ set "RAG_DIR=C:\Users\AI-Lab\Desktop\BotBuilder"
 
 IF NOT EXIST "%RAG_DIR%\.git" (
     echo [%date% %time%] Cloning RAG Builder Studio...
-    git clone https://github.com/WCTC-AI-Lab/BotBuilder.git "%RAG_DIR%"
+    git clone --depth 1 https://github.com/WCTC-AI-Lab/BotBuilder.git "%RAG_DIR%"
 ) ELSE (
     echo [%date% %time%] Updating RAG Builder Studio...
+    :: Remove any stale git lock files from interrupted previous runs
+    del /F /Q "%RAG_DIR%\.git\index.lock" 2>NUL
+    del /F /Q "%RAG_DIR%\.git\HEAD.lock" 2>NUL
     cd /d "%RAG_DIR%"
     git fetch origin main
     git reset --hard origin/main
