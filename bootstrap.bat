@@ -54,10 +54,10 @@ IF NOT EXIST "%TRAINER_DIR%\.git" (
     :: Remove any stale git lock files from interrupted previous runs
     del /F /Q "%TRAINER_DIR%\.git\index.lock" 2>NUL
     del /F /Q "%TRAINER_DIR%\.git\HEAD.lock" 2>NUL
-    cd /d "%TRAINER_DIR%"
-    git fetch origin main
-    git reset --hard origin/main
-    cd /d "C:\Users\AI-Lab\Desktop\AI-LAB-GUIDE"
+    :: Use -C instead of cd so we never leave this directory (cd would hold the
+    :: folder open if git hangs, making it impossible to delete on next run)
+    git -C "%TRAINER_DIR%" fetch origin main
+    git -C "%TRAINER_DIR%" reset --hard origin/main
 )
 
 IF NOT EXIST "%TRAINER_DIR%\.venv\Scripts\python.exe" (
@@ -88,10 +88,8 @@ IF NOT EXIST "%RAG_DIR%\.git" (
     :: Remove any stale git lock files from interrupted previous runs
     del /F /Q "%RAG_DIR%\.git\index.lock" 2>NUL
     del /F /Q "%RAG_DIR%\.git\HEAD.lock" 2>NUL
-    cd /d "%RAG_DIR%"
-    git fetch origin main
-    git reset --hard origin/main
-    cd /d "C:\Users\AI-Lab\Desktop\AI-LAB-GUIDE"
+    git -C "%RAG_DIR%" fetch origin main
+    git -C "%RAG_DIR%" reset --hard origin/main
 )
 
 IF NOT EXIST "%RAG_DIR%\.venv\Scripts\python.exe" (
